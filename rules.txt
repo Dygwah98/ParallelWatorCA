@@ -1,0 +1,49 @@
+////////////////////////////////////////////////////////////////
+//This is a draft for the rule system to be implemented:      //
+//this will be initially the same as the original             //
+////////////////////////////////////////////////////////////////
+
+	| id | age-range |
+Empty:  | 0  | inf       |
+Shrimp: | 1  | 0-15      |
+Fish:   | 2  | 0-5       |
+Shark:  | 3  | 0-7       |
+
+////////////////////////////////////////////////////////////////
+//TRADITIONAL RULESET:					      //
+//Let X be the cell expressed in the format (id, age)         //
+//and Y the randomly selected neighbor id it interacts with.  //
+//It's assumed that the following holds:                      //
+//a) Shrimp can interact only with empty cells                //
+//b) Fishes and Sharks can interact with everyone else        //
+////////////////////////////////////////////////////////////////
+
+X             | Y |    | X      | Y
+id age        |   |    | id age | id age
+1  0-7, 13-14 | 0 | -> | 0  0   | 1  ++
+1  8-12       | 0 | -> | 1  ++  | 1  0
+1  15         | 0 | -> | 0  0   | 0  0
+2  0-2        | 0 | -> | 0  0   | 2  ++
+2  0-2        | 1 | -> | 2  ++  | 0  0
+2  3-4        | 0 | -> | 2  ++  | 2  0
+2  5          | 0 | -> | 0  0   | 0  0
+2  3-5        | 1 | -> | 2  3   | 0  0
+3  0-1        | 0 | -> | 0  0   | 3  ++
+3  2-6        | 0 | -> | 3  ++  | 3  0
+3  7	      | 0 | -> | 0  0   | 0  0
+3  2-7	      | 1 | -> | 3  2   | 0  0 
+3  2-7        | 2 | -> | 3  2   | 0  0
+
+////////////////////////////////////////////////////////////////
+//CANNIBALISM ADDITION:                                       //
+//Adding these rules implements cannibalism in carnivore      //
+//speices (specifically, fishes and sharks).                  //
+//Only specimen in breeding age will practice cannibalism,    //
+//in order to avoid population implosion due to newborn       //
+//consumption                                                 //
+////////////////////////////////////////////////////////////////
+
+X      | Y      |    | X      | Y
+id age | id age |    | id age | id age
+2  3-5 | 2  3-5 | -> | 2  3   | 0  0
+3  2-7 | 3  2-7 | -> | 3  2   | 0  0
