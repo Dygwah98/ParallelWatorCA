@@ -72,16 +72,13 @@ void transition(Cell& cell, cell& neighbor) {
 	CellKey key1 = calculateCellKey(cell);
 	CellKey key2 = calculateCellKey(neighbor);
 
-	cell.id = value_original[key1.i][key1.j];
-	if(key1.j != 2)
-		++cell.age;
-	else 
-		cell.age = 0;
-	neighbor.id = value_neighbor[key2.i][key2.j];
-	if(key2.j != 2)
-		++neigbhor.age;
-	else 
-		neighbor.age = 0;
+	int i = key[key1.i][key1.j];
+	int j = key[key2.i][key2.j];
+
+	cell.id = value_original[i][j];
+	cell.age += (j == 2) ? -cell.age : 1;
+	neighbor.id = value_neighbor[i][j];
+	neighbor.age += (j == 2) ? -neighbor.age : 1;
 }
 
 int main(int argc, char const *argv[]) {
