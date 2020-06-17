@@ -23,29 +23,16 @@ typedef struct {
 	//these two matrices are indexed by keys and contain id values
 	const int value_original[10][10] = {
 	   //0 10 11 12 20 21 22 30 31 32
-/*0*/	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-/*10*/	{0, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-/*11*/	{1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-/*12*/	{0, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-/*20*/	{0, 2, 2, 2, 2, 2, 2, 2, 2, 2},
-/*21*/	{2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
-/*22*/	{0, 2, 2, 2, 2, 2, 2, 2, 2, 2},
-/*30*/	{0, 3, 3, 3, 3, 3, 3, 3, 3, 3},
-/*31*/	{3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
-/*32*/	{0, 3, 3, 3, 3, 3, 3, 3, 3, 3}
-	};
-	const int value_neighbor[10][10] = {
-	   //0 10 11 12 20 21 22 30 31 32
-/*0*/	{0, 1, 1, 1, 2, 2, 2, 3, 3, 3},
-/*10*/	{1, 1, 1, 1, 2, 2, 2, 3, 3, 3},
-/*11*/	{1, 1, 1, 1, 2, 2, 2, 3, 3, 3},
-/*12*/	{0, 1, 1, 1, 2, 2, 2, 3, 3, 3},
-/*20*/	{2, 0, 0, 0, 2, 2, 2, 3, 3, 3},
-/*21*/	{2, 0, 0, 0, 0, 0, 0, 3, 3, 3},
-/*22*/	{0, 0, 0, 0, 0, 0, 0, 3, 3, 3},
-/*30*/	{3, 0, 0, 0, 0, 0, 0, 3, 3, 3},
-/*31*/	{3, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-/*32*/	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+/*0*/	{0, 0, 1, 1, 0, 2, 2, 0, 3, 3},
+/*10*/	{1, 1, 1, 1, 0, 0, 0, 0, 0, 0},
+/*11*/	{1, 1, 1, 1, 0, 0, 0, 0, 0, 0},
+/*12*/	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+/*20*/	{2, 2, 2, 2, 2, 2, 2, 0, 0, 0},
+/*21*/	{2, 2, 2, 2, 2, 0, 0, 0, 0, 0},
+/*22*/	{0, 2, 2, 2, 2, 0, 0, 0, 0, 0},
+/*30*/	{3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
+/*31*/	{3, 3, 3, 3, 3, 3, 3, 3, 0, 0},
+/*32*/	{0, 3, 3, 3, 3, 3, 3, 3, 0, 0}
 	};
 
 inline CellKey calculateCellKey(const Cell& cell) {
@@ -133,7 +120,7 @@ void chooseNeigbor(int pi, int pj, int& i, int& j, Cell** mat, const int dim) {
 //	printf("Returning %d %d at end\n", i, j);
 }
 
-inline void transition(Cell& cell, Cell& neighbor, Cell& newcell, Cell& newneighbor) {
+inline void transition(Cell& cell, Cell& neighbor, Cell& newcell) {
 
 	//printf("starting transition({%d},{%d}...\n", cell.id, neighbor.id);
 
@@ -144,9 +131,7 @@ inline void transition(Cell& cell, Cell& neighbor, Cell& newcell, Cell& newneigh
 	int j = key[key2.i][key2.j];
 
 	newcell.id = value_original[i][j];
-	newneighbor.id = value_neighbor[i][j];
 	newcell.age = (key1.j == 2) ? 0 : cell.age + 1;
-	newneighbor.age = (key2.j == 2) ? 0 : cell.age + 1;
 }
 
 void printMatrix(Cell** mat, const int dim) {
@@ -163,13 +148,6 @@ void printMatrix(Cell** mat, const int dim) {
 	printf("\n");
 	printf("Sharks: %d\nFishes: %d\nShrimps: %d\n", pop[3], pop[2], pop[1]);
 	printf("\n");
-}
-
-bool canUpdate(int i, int j, int x, int y, int dim, std::set<int>& tat) {
-
-	return x != -1 && y != -1
-		&& tat.find(x*dim + y) == tat.end()
-		&& tat.find(i*dim + j) == tat.end();
 }
 
 int main(int argc, char const *argv[]) {
@@ -196,8 +174,6 @@ int main(int argc, char const *argv[]) {
 	}
 
 	int x, y;
-	char dummy;
-	std::set<int> tat;
 	for(int it = 0; it < 10; ++it) {
 		
 		printMatrix(mat, dim);
@@ -208,21 +184,13 @@ int main(int argc, char const *argv[]) {
 //				printf("iteration %d index %d %d\n", it, i, j);
 
 				if(mat[i][j].id != 0) {
-					x = y = -1;			
-					if(tat.find(i*dim+j) == tat.end()) {
-						chooseNeigbor(i, j, x, y, mat, dim);
-						if(tat.find(x*dim+y) == tat.end()) {
-							transition(mat[i][j], mat[x][y], tam[i][j], tam[x][y]);
-							tat.insert(i*dim+j);
-							tat.insert(x*dim+y);
-						}
-					}
+					chooseNeigbor(i, j, x, y, mat, dim);
+					transition(mat[i][j], mat[x][y], tam[i][j]);
 				}
 			}
 		}
 
 		std::swap(mat, tam);
-		tat.clear();
 	}
 
 	for(int i = 0; i < dim; ++i)
