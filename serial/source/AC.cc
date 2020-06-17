@@ -1,41 +1,6 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<time.h>
-#include<vector>
-#include<set>
+#include"../headers/AC.h"
 
-typedef struct {
-	int id;
-	int age;
-} Cell;
-
-typedef struct {
-	int i;
-	int j;
-} CellKey;
-
-//	int key[] = {0, 10, 11, 12, 20, 21, 22, 30, 31, 32};
-	const int key[3][3] = {
-		{1, 2, 3},
-		{4, 5, 6},
-		{7, 8, 9}
-	};
-	//these two matrices are indexed by keys and contain id values
-	const int value_original[10][10] = {
-	   //0 10 11 12 20 21 22 30 31 32
-/*0*/	{0, 0, 1, 1, 0, 2, 2, 0, 3, 3},
-/*10*/	{1, 1, 1, 1, 0, 0, 0, 0, 0, 0},
-/*11*/	{1, 1, 1, 1, 0, 0, 0, 0, 0, 0},
-/*12*/	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-/*20*/	{2, 2, 2, 2, 2, 2, 2, 0, 0, 0},
-/*21*/	{2, 2, 2, 2, 2, 0, 0, 0, 0, 0},
-/*22*/	{0, 2, 2, 2, 2, 0, 0, 0, 0, 0},
-/*30*/	{3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
-/*31*/	{3, 3, 3, 3, 3, 3, 3, 3, 0, 0},
-/*32*/	{0, 3, 3, 3, 3, 3, 3, 3, 0, 0}
-	};
-
-inline CellKey calculateCellKey(const Cell& cell) {
+CellKey calculateCellKey(const Cell& cell) {
 
 	CellKey ret;
 	ret.i = cell.id - 1;
@@ -120,7 +85,7 @@ void chooseNeigbor(int pi, int pj, int& i, int& j, Cell** mat, const int dim) {
 //	printf("Returning %d %d at end\n", i, j);
 }
 
-inline void transition(Cell& cell, Cell& neighbor, Cell& newcell) {
+void transition(Cell& cell, Cell& neighbor, Cell& newcell) {
 
 	//printf("starting transition({%d},{%d}...\n", cell.id, neighbor.id);
 
@@ -148,59 +113,4 @@ void printMatrix(Cell** mat, const int dim) {
 	printf("\n");
 	printf("Sharks: %d\nFishes: %d\nShrimps: %d\n", pop[3], pop[2], pop[1]);
 	printf("\n");
-}
-
-int main(int argc, char const *argv[]) {
-
-	const int dim = 25;
-	srand(time(NULL));
-
-	Cell** mat = new Cell*[dim];
-	for(int i = 0; i < dim; ++i) {
-		mat[i] = new Cell[dim];
-		for(int j = 0; j < dim; ++j) {
-			mat[i][j].id = rand()%4;
-			mat[i][j].age = 0;
-		}
-	}
-
-	Cell** tam = new Cell*[dim];
-	for(int i = 0; i < dim; ++i) {
-		tam[i] = new Cell[dim];
-		for(int j = 0; j < dim; ++j) {
-			tam[i][j].id = mat[i][j].id;
-			tam[i][j].age = mat[i][j].age;
-		}
-	}
-
-	int x, y;
-	for(int it = 0; it < 10; ++it) {
-		
-		printMatrix(mat, dim);
-
-		for(int i = 0; i < dim; ++i) {
-			for(int j = 0; j < dim; ++j) {
-
-//				printf("iteration %d index %d %d\n", it, i, j);
-
-				if(mat[i][j].id != 0) {
-					chooseNeigbor(i, j, x, y, mat, dim);
-					transition(mat[i][j], mat[x][y], tam[i][j]);
-				}
-			}
-		}
-
-		std::swap(mat, tam);
-	}
-
-	for(int i = 0; i < dim; ++i)
-		delete mat[i];
-	delete mat; 
-
-
-	for(int i = 0; i < dim; ++i)
-		delete tam[i];
-	delete tam; 
-
-	return 0;
 }
