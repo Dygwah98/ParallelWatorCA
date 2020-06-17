@@ -74,7 +74,7 @@ inline CellKey calculateCellKey(const Cell& cell) {
 
 void chooseNeigbor(int pi, int pj, int& i, int& j, Cell** mat, const int dim) {
 
-	printf("starting chooseNeigbor(%d,%d,%d,%d,%d...\n", pi, pj,i,j, mat);
+//	printf("starting chooseNeigbor(%d,%d,%d,%d,%d...\n", pi, pj,i,j, mat);
 
 	int posi = rand()%3;
 	int posj = rand()%3;
@@ -102,7 +102,7 @@ void chooseNeigbor(int pi, int pj, int& i, int& j, Cell** mat, const int dim) {
 				if(mat[(si + posi) % dim][(sj + posj) % dim].id == 0 && posi != 1 && posj != 1) {
 					i = (si + posi) % dim;
 					j = (sj + posj) % dim;
-					printf("Returning %d %d at %d %d\n", i, j, ind, ind2);
+//					printf("Returning %d %d at %d %d\n", i, j, ind, ind2);
 					return;
 				}
 			}
@@ -122,7 +122,7 @@ void chooseNeigbor(int pi, int pj, int& i, int& j, Cell** mat, const int dim) {
 				if(mat[(si + posi) % dim][(sj + posj) % dim].id == 0 && posi != 1 && posj != 1) {
 					i = (si + posi) % dim;
 					j = (sj + posj) % dim;
-					printf("Returning %d %d at %d %d\n", i, j, ind, ind2);
+//					printf("Returning %d %d at %d %d\n", i, j, ind, ind2);
 					return;
 				}
 			}
@@ -130,12 +130,12 @@ void chooseNeigbor(int pi, int pj, int& i, int& j, Cell** mat, const int dim) {
 		}
 	}
 
-	printf("Returning %d %d at end\n", i, j);
+//	printf("Returning %d %d at end\n", i, j);
 }
 
 inline void transition(Cell& cell, Cell& neighbor, Cell& newcell, Cell& newneighbor) {
 
-	printf("starting transition({%d},{%d}...\n", cell.id, neighbor.id);
+	//printf("starting transition({%d},{%d}...\n", cell.id, neighbor.id);
 
 	CellKey key1 = calculateCellKey(cell);
 	CellKey key2 = calculateCellKey(neighbor);
@@ -151,13 +151,18 @@ inline void transition(Cell& cell, Cell& neighbor, Cell& newcell, Cell& newneigh
 
 void printMatrix(Cell** mat, const int dim) {
 
+	int pop[4] = {0, 0, 0, 0};
+
 	for(int i = 0; i < dim; ++i) {
 		for(int j = 0; j < dim; ++j) {
 			printf("%d ", mat[i][j].id);
+			++pop[mat[i][j].id];
 		}
 		printf("\n");
 	}
-	printf("\n\n");
+	printf("\n");
+	printf("Sharks: %d\nFishes: %d\nShrimps: %d\n", pop[3], pop[2], pop[1]);
+	printf("\n");
 }
 
 bool canUpdate(int i, int j, int x, int y, int dim, std::set<int>& tat) {
@@ -169,14 +174,14 @@ bool canUpdate(int i, int j, int x, int y, int dim, std::set<int>& tat) {
 
 int main(int argc, char const *argv[]) {
 
-	const int dim = 3;
+	const int dim = 25;
 	srand(time(NULL));
 
 	Cell** mat = new Cell*[dim];
 	for(int i = 0; i < dim; ++i) {
 		mat[i] = new Cell[dim];
 		for(int j = 0; j < dim; ++j) {
-			mat[i][j].id = rand()%3;
+			mat[i][j].id = rand()%4;
 			mat[i][j].age = 0;
 		}
 	}
@@ -191,15 +196,16 @@ int main(int argc, char const *argv[]) {
 	}
 
 	int x, y;
+	char dummy;
 	std::set<int> tat;
-	for(int it = 0; it < 2; ++it) {
+	for(int it = 0; it < 10; ++it) {
 		
 		printMatrix(mat, dim);
 
 		for(int i = 0; i < dim; ++i) {
 			for(int j = 0; j < dim; ++j) {
 
-				printf("iteration %d index %d %d\n", it, i, j);
+//				printf("iteration %d index %d %d\n", it, i, j);
 
 				if(mat[i][j].id != 0) {
 					x = y = -1;			
@@ -218,8 +224,6 @@ int main(int argc, char const *argv[]) {
 		std::swap(mat, tam);
 		tat.clear();
 	}
-
-	printMatrix(mat, dim);
 
 	for(int i = 0; i < dim; ++i)
 		delete mat[i];
