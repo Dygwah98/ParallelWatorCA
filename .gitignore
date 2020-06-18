@@ -32,3 +32,4 @@
 *.app
 
 serial/build-WatorGUI-Desktop_Qt_5_15_0_GCC_64bit-Debug
+parallel/build-WatorGUI-Desktop_Qt_5_15_0_GCC_64bit-Debug
