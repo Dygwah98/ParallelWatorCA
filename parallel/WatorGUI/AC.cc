@@ -44,7 +44,7 @@ CellKey calculateCellKey(const Cell& cell) {
 	return ret;
 }
 
-void chooseNeighbor(int pi, int pj, int& i, int& j, Cell** mat, const int dim) {
+void chooseNeighbor(int pi, int pj, int& i, int& j, const int dim) {
 
 	static int pos[8] = {-4, -3, -2, -1, 1, 2, 3, 4};
 	int pivot = rand()%8;
@@ -95,7 +95,7 @@ void runWator(Cell*** mat, Cell*** tam, const int& dim) {
 //				printf("iteration %d index %d %d\n", it, i, j);
 
             if((*mat)[i][j].id != 0) {
-                chooseNeighbor(i, j, x, y, *mat, dim);
+                chooseNeighbor(i, j, x, y, dim);
                 transition((*mat)[i][j], (*mat)[x][y], (*tam)[i][j]);
             }
         }
