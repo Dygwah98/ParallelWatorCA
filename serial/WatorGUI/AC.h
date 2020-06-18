@@ -42,4 +42,4 @@ CellKey calculateCellKey(const Cell& cell);
 void chooseNeighbor(int pi, int pj, int& i, int& j, Cell** mat, const int dim);
 void transition(Cell& cell, Cell& neighbor, Cell& newcell);
 void printMatrix(Cell** mat, const int dim);
-void runWator(Cell** mat, Cell** tam, const int& dim);
+void runWator(Cell*** mat, Cell*** tam, const int& dim);

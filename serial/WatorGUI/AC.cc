@@ -1,4 +1,4 @@
-#include"../headers/AC.h"
+#include"AC.h"
 
 void allocateMatrices(Cell*** mat, Cell*** tam, const int& dim) {
 
@@ -86,24 +86,20 @@ void printMatrix(Cell** mat, const int dim) {
 	printf("\n");
 }
 
-void runWator(Cell** mat, Cell** tam, const int& dim) {
+void runWator(Cell*** mat, Cell*** tam, const int& dim) {
 
 	int x, y;
-	for(int it = 0; it < 10; ++it) {
-
-		printMatrix(mat, dim);
-		for(int i = 0; i < dim; ++i) {
-			for(int j = 0; j < dim; ++j) {
+    for(int i = 0; i < dim; ++i) {
+        for(int j = 0; j < dim; ++j) {
 
 //				printf("iteration %d index %d %d\n", it, i, j);
 
-				if(mat[i][j].id != 0) {
-					chooseNeighbor(i, j, x, y, mat, dim);
-					transition(mat[i][j], mat[x][y], tam[i][j]);
-				}
-			}
-		}
+            if((*mat)[i][j].id != 0) {
+                chooseNeighbor(i, j, x, y, *mat, dim);
+                transition((*mat)[i][j], (*mat)[x][y], (*tam)[i][j]);
+            }
+        }
+    }
 
-		std::swap(mat, tam);
-	}
+    std::swap(mat, tam);
 }
