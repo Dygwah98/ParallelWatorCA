@@ -24,9 +24,18 @@ CellKey calculateCellKey(const Cell& cell) {
 	return ret;
 }
 
-void chooseNeigbor(int pi, int pj, int& i, int& j, Cell** mat, const int dim) {
+void chooseNeighbor(int pi, int pj, int& i, int& j, Cell** mat, const int dim) {
 
-//	printf("starting chooseNeigbor(%d,%d,%d,%d,%d...\n", pi, pj,i,j, mat);
+	static int pos[8] = {-4, -3, -2, -1, 1, 2, 3, 4};
+	int pivot = rand()%8;
+
+	int temp = (pi*dim + pj + pos[pivot]);
+	i = (temp/dim)%dim;
+	j = (temp + dim)%dim;
+}
+/*void chooseNeighbor(int pi, int pj, int& i, int& j, Cell** mat, const int dim) {
+
+//	printf("starting chooseNeighbor(%d,%d,%d,%d,%d...\n", pi, pj,i,j, mat);
 
 	int posi = rand()%3;
 	int posj = rand()%3;
@@ -35,15 +44,15 @@ void chooseNeigbor(int pi, int pj, int& i, int& j, Cell** mat, const int dim) {
 	}
 	int si = (pi-1 + dim) % dim;
 	int sj = (pj-1 + dim) % dim;
-	
+
 	i = (si + posi) % dim;
-	j = (sj + posj) % dim;				
+	j = (sj + posj) % dim;
 
 //	printf("Before id check\n");
 
 	//if a shrimp
 	if(mat[pi][pj].id == 1) {
-		
+
 //		printf("First id check, i: %d j: %d\n", i, j);
 
 		if(mat[i][j].id != 0)
@@ -83,7 +92,7 @@ void chooseNeigbor(int pi, int pj, int& i, int& j, Cell** mat, const int dim) {
 	}
 
 //	printf("Returning %d %d at end\n", i, j);
-}
+}*/
 
 void transition(Cell& cell, Cell& neighbor, Cell& newcell) {
 
@@ -96,7 +105,7 @@ void transition(Cell& cell, Cell& neighbor, Cell& newcell) {
 	int j = key[key2.i][key2.j];
 
 	newcell.id = value_original[i][j];
-	newcell.age = (key1.j == 2) ? 0 : cell.age + 1;
+	newcell.age = (key1.j == 2 || newcell.id == 0) ? 0 : cell.age + 1;
 }
 
 void printMatrix(Cell** mat, const int dim) {

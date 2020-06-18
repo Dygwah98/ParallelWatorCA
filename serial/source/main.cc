@@ -25,7 +25,7 @@ int main(int argc, char const *argv[]) {
 
 	int x, y;
 	for(int it = 0; it < 10; ++it) {
-		
+
 		printMatrix(mat, dim);
 
 		for(int i = 0; i < dim; ++i) {
@@ -34,7 +34,7 @@ int main(int argc, char const *argv[]) {
 //				printf("iteration %d index %d %d\n", it, i, j);
 
 				if(mat[i][j].id != 0) {
-					chooseNeigbor(i, j, x, y, mat, dim);
+					chooseNeighbor(i, j, x, y, mat, dim);
 					transition(mat[i][j], mat[x][y], tam[i][j]);
 				}
 			}
@@ -45,12 +45,11 @@ int main(int argc, char const *argv[]) {
 
 	for(int i = 0; i < dim; ++i)
 		delete mat[i];
-	delete mat; 
-
+	delete mat;
 
 	for(int i = 0; i < dim; ++i)
 		delete tam[i];
-	delete tam; 
+	delete tam;
 
 	return 0;
 }
