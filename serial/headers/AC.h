@@ -35,7 +35,11 @@ const int value_original[10][10] = {
 /*32*/	{0, 3, 3, 3, 3, 3, 3, 3, 0, 0}
 	};
 
+
+void allocateMatrices(Cell*** mat, Cell*** tam, const int& dim);
+void freeMatrices(Cell*** mat, Cell*** tam, const int& dim);
 CellKey calculateCellKey(const Cell& cell);
 void chooseNeighbor(int pi, int pj, int& i, int& j, Cell** mat, const int dim);
 void transition(Cell& cell, Cell& neighbor, Cell& newcell);
 void printMatrix(Cell** mat, const int dim);
+void runWator(Cell** mat, Cell** tam, const int& dim);

@@ -10,10 +10,10 @@ Fish:   | 2  | 0-5       |
 Shark:  | 3  | 0-7       |
 
 ////////////////////////////////////////////////////////////////
-//TRADITIONAL RULESET:					      				  //
+//TRADITIONAL RULESET:					      //
 //Let X be the cell expressed in the format (id, age)         //
-//and Y the relevant neighbor (the cell that activates  	  //
-the rule).  												  //
+//and Y the relevant neighbor (the cell that activates        //
+the rule).                                                    //
 //It's assumed that the following holds:                      //
 //a) Shrimp can interact only with empty cells                //
 //b) Fishes and Sharks can interact with everyone else        //
@@ -21,15 +21,15 @@ the rule).  												  //
 
 X             | Y       |    | X      |
 id age        | id age  |    | id age |
-0  _          | 1 8-12  | -> | 1  0   |
+0  _          | 1 8-14  | -> | 1  0   |
 1  15         | _ _     | -> | 0  0   |
 1  _          | 2 _     | -> | 0  0   |
 0  _          | 2 3-4   | -> | 2  0   |
 2  5          | 0 _     | -> | 0  0   |
 0  _          | 3 2-6   | -> | 3  0   |
 3  7	      | 0 _     | -> | 0  0   |
-1  _ 	      | 3 2-7   | -> | 0  0   | 
-2  _          | 3 2-7   | -> | 0  0   |
+1  _          | 3 _     | -> | 0  0   | 
+2  _          | 3 _     | -> | 0  0   |
 
 ////////////////////////////////////////////////////////////////
 //CANNIBALISM ADDITION:                                       //

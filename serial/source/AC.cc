@@ -1,25 +1,45 @@
 #include"../headers/AC.h"
 
+void allocateMatrices(Cell*** mat, Cell*** tam, const int& dim) {
+
+	*mat = new Cell*[dim];
+	for(int i = 0; i < dim; ++i) {
+		(*mat)[i] = new Cell[dim];
+		for(int j = 0; j < dim; ++j) {
+			(*mat)[i][j].id = rand()%4;
+			(*mat)[i][j].age = 0;
+		}
+	}
+
+	*tam = new Cell*[dim];
+	for(int i = 0; i < dim; ++i) {
+		(*tam)[i] = new Cell[dim];
+		for(int j = 0; j < dim; ++j) {
+			(*tam)[i][j].id  = (*mat)[i][j].id;
+			(*tam)[i][j].age = (*mat)[i][j].age;
+		}
+	}
+}
+
+void freeMatrices(Cell*** mat, Cell*** tam, const int& dim) {
+
+	for(int i = 0; i < dim; ++i)
+		delete (*mat)[i];
+	delete (*mat);
+
+	for(int i = 0; i < dim; ++i)
+		delete (*tam)[i];
+	delete (*tam);
+
+}
+
 CellKey calculateCellKey(const Cell& cell) {
 
 	CellKey ret;
 	ret.i = cell.id - 1;
-	if(cell.id == 1) {
+	int jmap[3][2] = {{8,15}, {3,5}, {2,7}};
 
-		ret.j = (cell.age == 15) ? 2 : (cell.age%13)/8;
-
-	} else if(cell.id == 2) {
-
-		ret.j = (cell.age == 5) ? 2 : cell.age/3;
-
-	} else if(cell.id == 3) {
-
-		ret.j = (cell.age == 7) ? 2 : (cell.age > 1) ? 1 : 0;
-
-	} else {
-
-		ret.j = 0;
-	}
+	ret.j = (cell.age == jmap[ret.i][1]) ? 2 : (cell.age > jmap[ret.i][0]) ? 1 : 0;
 
 	return ret;
 }
@@ -33,66 +53,6 @@ void chooseNeighbor(int pi, int pj, int& i, int& j, Cell** mat, const int dim) {
 	i = (temp/dim)%dim;
 	j = (temp + dim)%dim;
 }
-/*void chooseNeighbor(int pi, int pj, int& i, int& j, Cell** mat, const int dim) {
-
-//	printf("starting chooseNeighbor(%d,%d,%d,%d,%d...\n", pi, pj,i,j, mat);
-
-	int posi = rand()%3;
-	int posj = rand()%3;
-	if(posi == 1 && posj == 1) {
-		posi = posj = 0;
-	}
-	int si = (pi-1 + dim) % dim;
-	int sj = (pj-1 + dim) % dim;
-
-	i = (si + posi) % dim;
-	j = (sj + posj) % dim;
-
-//	printf("Before id check\n");
-
-	//if a shrimp
-	if(mat[pi][pj].id == 1) {
-
-//		printf("First id check, i: %d j: %d\n", i, j);
-
-		if(mat[i][j].id != 0)
-		for(int ind = 0; ind < 3; ++ind) {
-//			printf("       posi %d posj %d\n", posi, posj);
-			for(int ind2 = 0; ind2 < 3; ++ind2) {
-				posj = (posj + 1) % 3;
-				if(mat[(si + posi) % dim][(sj + posj) % dim].id == 0 && posi != 1 && posj != 1) {
-					i = (si + posi) % dim;
-					j = (sj + posj) % dim;
-//					printf("Returning %d %d at %d %d\n", i, j, ind, ind2);
-					return;
-				}
-			}
-			posi = (posi + 1) % 3;
-			if(posi == 0)
-				posj = 0;
-		}
-	//if a fish
-	} else if(mat[pi][pj].id == 2) {
-
-//		printf("Second id check, i: %d j: %d\n", i, j);
-
-		if(mat[i][j].id == 3)
-		for(int ind = 0; ind < 3; ++ind) {
-			for(int ind2 = 0; ind2 < 3; ++ind2) {
-				posj = (posj + 1) % 3;
-				if(mat[(si + posi) % dim][(sj + posj) % dim].id == 0 && posi != 1 && posj != 1) {
-					i = (si + posi) % dim;
-					j = (sj + posj) % dim;
-//					printf("Returning %d %d at %d %d\n", i, j, ind, ind2);
-					return;
-				}
-			}
-			posi = (posi + 1) % 3;
-		}
-	}
-
-//	printf("Returning %d %d at end\n", i, j);
-}*/
 
 void transition(Cell& cell, Cell& neighbor, Cell& newcell) {
 
@@ -113,13 +73,37 @@ void printMatrix(Cell** mat, const int dim) {
 	int pop[4] = {0, 0, 0, 0};
 
 	for(int i = 0; i < dim; ++i) {
+
+		printf("\n");
+		
 		for(int j = 0; j < dim; ++j) {
 			printf("%d ", mat[i][j].id);
-			++pop[mat[i][j].id];
+			++pop[ mat[i][j].id ];
 		}
-		printf("\n");
 	}
-	printf("\n");
+	printf("\n\n");
 	printf("Sharks: %d\nFishes: %d\nShrimps: %d\n", pop[3], pop[2], pop[1]);
 	printf("\n");
+}
+
+void runWator(Cell** mat, Cell** tam, const int& dim) {
+
+	int x, y;
+	for(int it = 0; it < 10; ++it) {
+
+		printMatrix(mat, dim);
+		for(int i = 0; i < dim; ++i) {
+			for(int j = 0; j < dim; ++j) {
+
+//				printf("iteration %d index %d %d\n", it, i, j);
+
+				if(mat[i][j].id != 0) {
+					chooseNeighbor(i, j, x, y, mat, dim);
+					transition(mat[i][j], mat[x][y], tam[i][j]);
+				}
+			}
+		}
+
+		std::swap(mat, tam);
+	}
 }
