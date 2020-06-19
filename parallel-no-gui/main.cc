@@ -19,19 +19,17 @@ int main(int argc, char const *argv[]) {
 
     srand(time(NULL) * world_rank);
 
-	Cell **mat, **tam, *ghostcells;
+	Cell **mat, **tam;
 	
 	int partition = getPartitionSize(dim, world_size);
 
     if(world_rank == 0) {
     	allocateMatrices(&mat, &tam, dim);
-    	allocateGhostCells(&ghostcells, partition, mat, dim, world_size);
     }
 
 	//runWator(&mat, &tam, dim, iter, &ghostcells);
 
 	if(world_rank == 0) {
-		delete ghostcells;
 		freeMatrices(&mat, &tam, dim);
     }
     

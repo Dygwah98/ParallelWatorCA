@@ -100,14 +100,7 @@ void printInfo(Cell** mat, const int dim, int it) {
 	printf("\n");
 }
 
-void runWator(Cell*** mat, Cell*** tam, const int& dim, const int& iter, Cell **ghostcells) {
-
-	int world_rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
-    int world_size;
-    MPI_Comm_size(MPI_COMM_WORLD, &world_size);
-
-    int partition = getPartitionSize(dim, world_size);
+void runWator(Cell*** mat, Cell*** tam, const int& dim, const int& iter) {
 
 	int x, y;
 	for(int k = 0; k < iter; ++k) {
@@ -128,10 +121,6 @@ void runWator(Cell*** mat, Cell*** tam, const int& dim, const int& iter, Cell **
 
     	std::swap(mat, tam);
 
-    	if(world_rank == 0) {
-    		for(int i = 0; i < world_size; ++i)
-    			updateGhostCells(ghostcells, partition, *mat, dim, i);
-    	}
     }
 }
 
@@ -145,36 +134,4 @@ int getPartitionSize(const int dim, int world_size) {
 	}
 
 	return ret;
-}
-
-void updateGhostCells(Cell **ghostcells, const int partition, Cell **mat, const int dim, const int world_rank) {
-
-	int temp = (4*partition + 4);
-	int sx = ((world_rank/(dim/partition)) * partition -1 + dim) % dim;
-	int sy = ((world_rank%(dim/partition)) * partition -1 + dim) % dim;
-	int fx = (sx + partition) % dim;
-	int fy = (sy + partition) % dim; 
-
-	int s = world_rank * temp;
-	int ds = partition + 1;
-	for(int i = -1; i <= partition; ++i)
-	(*ghostcells)[s + 1 + i] = mat[sx][(sy + i + dim) % dim];
-	
-	for(int i = 0; i <= partition; ++i)
-	(*ghostcells)[s + ds + i] = mat[(sx + i) % dim][fy];
-	
-	for(int i = 0; i <= partition; ++i)
-	(*ghostcells)[s + 2*ds + i] = mat[fx][(fy - i + dim) % dim];
-
-	for(int i = 0; i < partition; ++i)
-	(*ghostcells)[s + 3*ds + i] = mat[(fx - i + dim) % dim][sy];
-}
-
-void allocateGhostCells(Cell **ghostcells, const int partition, Cell **mat, const int dim, const int world_size) {
-
-	int temp = (4*partition + 4) * world_size;
-	(*ghostcells) = new Cell[temp];
-
-	for(int i = 0; i < world_size; ++i)
-		updateGhostCells(ghostcells, partition, mat, dim, i);
 }
