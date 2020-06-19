@@ -3,6 +3,8 @@
 #include<time.h>
 #include<vector>
 #include<set>
+#include<cmath>
+#include<mpi.h>
 
 typedef struct {
 	int id;
@@ -42,4 +44,7 @@ CellKey calculateCellKey(const Cell& cell);
 void chooseNeighbor(int pi, int pj, int& i, int& j, const int dim);
 void transition(Cell& cell, Cell& neighbor, Cell& newcell);
 void printMatrix(Cell** mat, const int dim);
-void runWator(Cell*** mat, Cell*** tam, const int& dim);
+void runWator(Cell*** mat, Cell*** tam, const int& dim, const int& iter, Cell **ghostcells);
+int getPartitionSize(const int dim, int world_size);
+void updateGhostCells(Cell **ghostcells, const int partition, Cell **mat, const int dim, const int world_rank);
+void allocateGhostCells(Cell **ghostcells, const int partition, Cell **mat, const int dim, const int world_size);

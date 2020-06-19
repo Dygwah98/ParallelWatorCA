@@ -1,18 +1,40 @@
 #include"AC.h"
+#include<mpi.h>
 
 int main(int argc, char const *argv[]) {
 
-	srand(time(NULL));
+	if(argc < 2) {
+		fprintf(stderr, "Usage: matrix-dimension iterations-number\n");
+	}
 
-	const int dim = 25;
-	Cell **mat;
-	Cell **tam;
+	const int dim = atoi(argv[1]);
+	const int iter = atoi(argv[2]);
 
-	allocateMatrices(&mat, &tam, dim);
+	MPI_Init(NULL, NULL);
 
-	runWator(&mat, &tam, dim);
+    int world_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+    int world_size;
+    MPI_Comm_size(MPI_COMM_WORLD, &world_size);
 
-	freeMatrices(&mat, &tam, dim);	
+    srand(time(NULL) * world_rank);
 
+	Cell **mat, **tam, *ghostcells;
+	
+	int partition = getPartitionSize(dim, world_size);
+
+    if(world_rank == 0) {
+    	allocateMatrices(&mat, &tam, dim);
+    	allocateGhostCells(&ghostcells, partition, mat, dim, world_size);
+    }
+
+	//runWator(&mat, &tam, dim, iter, &ghostcells);
+
+	if(world_rank == 0) {
+		delete ghostcells;
+		freeMatrices(&mat, &tam, dim);
+    }
+    
+	MPI_Finalize();
 	return 0;
 }
