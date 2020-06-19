@@ -48,26 +48,28 @@ int main(int argc, char const *argv[]) {
 
 //  printf("Before execution\n");
     
-/*    if(world_rank == 0) {
+    if(world_rank == 0) {
     	printMatrix(mat, dim);
     }
-*/
+
+    int pos = 0;
+    if(world_rank == 0)
+    	pos = extra;
+
     for(int i = 0; i < iter; ++i) {  
 //    	printf("loop no.%d proc %d\n", i, world_rank);
     	MPI_Barrier(MPI_COMM_WORLD);
-    	MPI_Bcast((void*)&(mat[0][0]), dim*dim, vec_t, 0, MPI_COMM_WORLD);
+    	MPI_Bcast(&(mat[0][0]), dim, vec_t, 0, MPI_COMM_WORLD);
 //    	printf("Before runWator()\n");
     	runWator(mat, tam, p + extra, dim, p*world_rank, 0);
 //    	printf("before MPI_Gather\n");
-    	MPI_Gather((void*)&(tam[0][0]), p, vec_t, (void*)sendbufp, p, vec_t, 0, MPI_COMM_WORLD);
+    	MPI_Gather(&(tam[pos][0]), p, vec_t, sendbufp, p, vec_t, 0, MPI_COMM_WORLD);
 //    	if(world_rank == 0)		printMatrix(mat, dim);
     	MPI_Barrier(MPI_COMM_WORLD);
-/*    	if(world_rank == 0)
-    		printf("\nbefore next iteration\n");
     	if(world_rank == 0) {
     		printMatrix(mat, dim);
     	}
-*/    	MPI_Barrier(MPI_COMM_WORLD);
+    	MPI_Barrier(MPI_COMM_WORLD);
     }
     
 	freeMatrix(mat, matdata);

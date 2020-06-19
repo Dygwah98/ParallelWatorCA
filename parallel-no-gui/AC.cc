@@ -13,7 +13,7 @@ void allocateMatrix(Cell ***datap, const int n, Cell** data, const int dim) {
 	for(int i = 0; i < n; ++i)
 		(*datap)[i] = (*data) + i*dim;
 
-	printf("%p %p\n", data, *datap);
+//	printf("%p %p\n", data, *datap);
 //	printf("allocateMatrix(%d, %d, %d, %d): datap allocated\n", datap, n, data, dim);
 }
 
