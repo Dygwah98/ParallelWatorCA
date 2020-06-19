@@ -1,20 +1,16 @@
 #include"AC.h"
 
 void allocateMatrix(Cell ***datap, const int n, Cell** data, const int dim) {
-//	printf("allocateMatrix(%d, %d, %d, %d)\n", datap, n, data, dim);
 
 	(*data) = new Cell[n*dim];
 	for(int i = 0; i < n*dim; ++i)
 		(*data)[i] = (rand()%4)*100;
 
-//	printf("allocateMatrix(%d, %d, %d, %d): data allocated\n", datap, n, data, dim);
 
 	(*datap) = new Cell*[n];
 	for(int i = 0; i < n; ++i)
 		(*datap)[i] = (*data) + i*dim;
 
-//	printf("%p %p\n", data, *datap);
-//	printf("allocateMatrix(%d, %d, %d, %d): datap allocated\n", datap, n, data, dim);
 }
 
 void freeMatrix(Cell** p, Cell* data) {
@@ -41,7 +37,7 @@ Cell* chooseNeighbor(int pi, int pj, const int dim, Cell **mat) {
 	int temp = (pi*dim + pj);
 	int i = (temp/dim + pos[pivot]/3 + dim) % dim;
 	int j = (temp%dim + pos[pivot]%3 + dim) % dim;
-//	printf("neighbor of (%d, %d) in cell: (%d, %d)\n", pi, pj, i, j);
+
 	return &(mat[i][j]);
 }
 
@@ -63,7 +59,6 @@ void transition(Cell& cell, Cell& neighbor, Cell& newcell) {
 	newcell = value_original[i][j]*100;
 	newcell += (key1.j == 2 || newcell/100 == 0) ? 0 : cell%100 + 1;
 
-//	printf("transition(%d,%d) -> (%d)\n", cell, neighbor, newcell);
 }
 
 void printMatrix(Cell** mat, const int dim) {
