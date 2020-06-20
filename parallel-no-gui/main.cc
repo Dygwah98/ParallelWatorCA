@@ -3,12 +3,16 @@
 
 int main(int argc, char const *argv[]) {
 
-	if(argc < 2) {
+	if(argc < 3) {
 		fprintf(stderr, "Usage: matrix-dimension iterations-number\n");
 	}
 
 	const int dim = atoi(argv[1]);
 	const int iter = atoi(argv[2]);
+	const int nthreads = atoi(argv[3]);
+	
+	omp_set_dynamic(0);
+	omp_set_num_threads(nthreads);
 
 	MPI_Init(NULL, NULL);
 
@@ -41,10 +45,9 @@ int main(int argc, char const *argv[]) {
     int pos = 0;
     if(world_rank == 0)
     	pos = extra;
-
-    for(int i = 0; i < iter; ++i) {  
-
-    	MPI_Barrier(MPI_COMM_WORLD);
+ 
+    MPI_Barrier(MPI_COMM_WORLD);
+    for(int i = 0; i < iter; ++i) { 
     	MPI_Bcast(&(mat[0][0]), dim, vec_t, 0, MPI_COMM_WORLD);
 
     	runWator(mat, tam, p + extra, dim, p*world_rank, 0);

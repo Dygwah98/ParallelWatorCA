@@ -96,6 +96,8 @@ void printInfo(Cell** mat, const int dim, int it) {
 void runWator(Cell** mat, Cell** tam, const int p, const int dim, const int sx, const int sy) {
 
 	Cell* neighbor;
+	
+	#pragma omp parallel for shared(mat, tam)
     for(int i = 0; i < p; ++i) {
         int si = sx + i;
         for(int j = 0; j < dim; ++j) {

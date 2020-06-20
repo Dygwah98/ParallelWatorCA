@@ -5,6 +5,7 @@
 #include<set>
 #include<cmath>
 #include<mpi.h>
+#include<omp.h>
 
 typedef int Cell;
 
