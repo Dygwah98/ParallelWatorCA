@@ -34,25 +34,21 @@ int main(int argc, char const *argv[]) {
 
 	int extra = 0;
 	allocateMatrix(&mat, dim, &matdata, dim);
-    if(world_rank == 0) {
-    	extra = dim - p*world_size;
-    	allocateMatrix(&tam, p + extra, &tamdata, dim);
-    	sendbufp = &( mat[ extra ][ 0 ] );
-    } else {
-    	allocateMatrix(&tam, p, &tamdata, dim);
-    }
+    	if(world_rank == 0) {
+    		extra = dim - p*world_size;
+    		allocateMatrix(&tam, p + extra, &tamdata, dim);
+		sendbufp = &( mat[ extra ][ 0 ] );
+    	} else {
+    		allocateMatrix(&tam, p, &tamdata, dim);
+    	}
 
-    int pos = 0;
-    if(world_rank == 0)
-    	pos = extra;
- 
     MPI_Barrier(MPI_COMM_WORLD);
     for(int i = 0; i < iter; ++i) { 
     	MPI_Bcast(&(mat[0][0]), dim, vec_t, 0, MPI_COMM_WORLD);
-
+  
     	runWator(mat, tam, p + extra, dim, p*world_rank, 0);
 
-    	MPI_Gather(&(tam[pos][0]), p, vec_t, sendbufp, p, vec_t, 0, MPI_COMM_WORLD);
+    	MPI_Gather(&(tam[extra][0]), p, vec_t, sendbufp, p, vec_t, 0, MPI_COMM_WORLD);
     }
     
 	freeMatrix(mat, matdata);
