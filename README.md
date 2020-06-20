@@ -2,7 +2,7 @@
 An hybrid MPI-OpenMP implementation of a cellular automata based on the known Wator model.
 
 # Requirements
-OpenMP, MPI, make for te -no-gui versions; Qt5+ and qmake for the others.
+OpenMP, MPI, make for the -no-gui versions; Qt5+ and qmake for the others.
 
 # Build & Run
 Just launch the .sh (either gui-run or no-gui-run) as below: <br>
