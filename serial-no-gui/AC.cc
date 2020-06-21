@@ -93,11 +93,8 @@ void runWator(Cell*** mat, Cell*** tam, const int& dim) {
         for(int j = 0; j < dim; ++j) {
 
 //				printf("iteration %d index %d %d\n", it, i, j);
-
-            if((*mat)[i][j].id != 0) {
                 chooseNeighbor(i, j, x, y, *mat, dim);
                 transition((*mat)[i][j], (*mat)[x][y], (*tam)[i][j]);
-            }
         }
     }
 
