@@ -51,7 +51,7 @@ int main(int argc, char const *argv[]) {
 	
     MPI_Barrier(MPI_COMM_WORLD);
     
-    #pragma omp parallel shared(mat, tam), firstprivate(p, extra, world_rank, dim) if(nthreads > 1)
+    #pragma omp parallel shared(mat, tam, iter, vec_t, sendbufp), default(none), firstprivate(p, extra, world_rank, dim) if(nthreads > 1)
     for(int i = 0; i < iter; ++i) { 
     	
     	#pragma omp barrier
