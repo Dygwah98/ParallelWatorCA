@@ -37,8 +37,43 @@ const int value_original[10][10] = {
 
 void allocateMatrix(Cell ***datap, const int n, Cell** data, const int dim);
 void freeMatrix(Cell** p, Cell* data);
-CellKey calculateCellKey(const Cell& cell);
-Cell* chooseNeighbor(int pi, int pj, int& i, int& j, const int dim);
-void transition(Cell& cell, Cell& neighbor, Cell& newcell);
+inline CellKey calculateCellKey(const Cell& cell) {
+
+	CellKey ret;
+	ret.i = cell/100 - 1;
+	static int jmap[3][2] = {{8,15}, {3,5}, {2,7}};
+
+	ret.j = (cell%100 == jmap[ret.i][1]) ? 2 : (cell%100 > jmap[ret.i][0]) ? 1 : 0;
+	return ret;
+}
+inline Cell* chooseNeighbor(int pi, int pj, const int dim, Cell** mat) {
+
+	int pos[8] = {-4, -3, -2, -1, 1, 2, 3, 4};
+	int pivot = rand()%8;
+
+	int temp = (pi*dim + pj);
+	int i = (temp/dim + pos[pivot]/3 + dim) % dim;
+	int j = (temp%dim + pos[pivot]%3 + dim) % dim;
+
+	return &(mat[i][j]);
+}
+inline void transition(Cell& cell, Cell& neighbor, Cell& newcell) {
+
+	int i = 0;
+	int j = 0;
+	CellKey key1 = {0, 0};
+	CellKey key2 = {0, 0};
+	if(cell/100 != 0) {
+		key1 = calculateCellKey(cell);
+		i = key[key1.i][key1.j];
+	}
+	if(neighbor/100 != 0) {
+		key2 = calculateCellKey(neighbor);
+		j = key[key2.i][key2.j];
+	}
+
+	newcell = value_original[i][j]*100;
+	newcell += (key1.j == 2 || newcell/100 == 0) ? 0 : cell%100 + 1;
+
+}
 void printMatrix(Cell** mat, const int dim);
-void runWator(Cell** mat, Cell** tam, const int p, const int dim, const int sx, const int sy);
