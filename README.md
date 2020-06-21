@@ -7,7 +7,7 @@ OpenMP, MPI, make for the -no-gui versions.
 ## Build & Run
 Just launch the .sh (either gui-run or no-gui-run) as below: <br>
 sh .sh [version] [problemDimension] [numberOfProcesses] <br>
-Where [numberOfProcesses] is a number >=2 indicating how many processeses will be launched, [problemDimension] is self-explanatory nad [version] is one of the following:
+Where [numberOfProcesses] is a number >=2 indicating how many processeses will be launched, [problemDimension] is self-explanatory and [version] is one of the following:
 <br>
 <ul>
 <li>serial-no-gui: a single-thread single-process, clean version of the algorithm used (no user interface);
