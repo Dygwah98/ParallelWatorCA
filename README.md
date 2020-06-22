@@ -6,7 +6,7 @@ OpenMP, MPI, make for the -no-gui versions; same + Allegro5 for the gui version
 
 ## Build & Run
 Just move to your folder of interest and run the run.sh script file inside as below: <br>
-<b> sh run.sh [MPI_processes] [openMP_threads] [problem_dimension] [iterations_number] <\b>
+<b> sh run.sh [MPI_processes] [openMP_threads] [problem_dimension] [iterations_number] <br>
 The following version are available:
 <br>
 <ul>
