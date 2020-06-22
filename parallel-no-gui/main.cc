@@ -3,6 +3,12 @@
 
 int main(int argc, char const *argv[]) {
 	
+	int key[3][3] = {
+		{1, 2, 3},
+		{4, 5, 6},
+		{7, 8, 9}
+	}
+
 	int value_original[10][10] = {
        //0 10 11 12 20 21 22 30 31 32
 /*0*/	{0, 0, 1, 1, 0, 2, 2, 0, 3, 3},
@@ -43,7 +49,7 @@ int main(int argc, char const *argv[]) {
 	if(world_rank == 0)
 		start = MPI_Wtime();
 
-    unsigned seed = ((int)MPI_Wtime()) ^ world_rank;
+    unsigned seed = (int)MPI_Wtime() * (world_rank + 1);
 
 	Cell **mat = NULL;
 	Cell **tam = NULL;
@@ -76,7 +82,7 @@ int main(int argc, char const *argv[]) {
 		int sx, cid, nid;
 		int pivot, temp, ni, nj, ti, tj;
 		int chunk_size = (p + extra)/nthreads + 1;
-    	unsigned seed2 = (int)omp_get_wtime() ^ omp_get_thread_num();
+    	unsigned seed2 = (int)omp_get_wtime() * (omp_get_thread_num() + 1);
 
     	for(int it = 0; it < iter; ++it) {
 		#pragma omp barrier
@@ -84,34 +90,34 @@ int main(int argc, char const *argv[]) {
     	MPI_Bcast(&(mat[0][0]), dim, vec_t, 0, MPI_COMM_WORLD);
     	#pragma omp barrier
 	    
-		#pragma omp for nowait schedule(monotonic:guided, chunk_size) 
+		#pragma omp for nowait schedule(guided, chunk_size) 
     	for(int i = 0; i < p + extra; ++i) {
-        	sx = p*world_rank + i;
+        	sx = (p+extra)*world_rank + i;
         	for(int j = 0; j < dim; ++j) {
    					
-   					pivot = pos[my_rand_r(&seed2)%8];
-					temp = (sx*dim + j);
-					ni = (sx + j/dim + pivot/3 + dim) % dim;
-					nj = (temp%dim + pivot%3 + dim) % dim;
+   				pivot = pos[my_rand_r(&seed2)%8];
+				temp = (sx*dim + j);
+				ni = (sx + j/dim + pivot/3 + dim) % dim;
+				nj = (temp%dim + pivot%3 + dim) % dim;
 
-					Cell& neighbor = mat[i][j];
-					Cell& cell = mat[sx][j];
-					Cell& newcell = tam[i][j];
+				Cell& neighbor = mat[ni][nj];
+				Cell& cell = mat[sx][j];
+				Cell& newcell = tam[i][j];
 
-					if(!(neighbor == cell && (neighbor == 0 || neighbor == 1))) {
-						cid = cell%100;
-						nid = neighbor%100;
-						ti = (cell/100);
-						if(ti != 0)
-							ti += (cid == jmap[ti-1][1]) ? 2 : (cid > jmap[ti-1][0]) ? 1 : 0;
-					
-						tj = (neighbor/100);
-						if(tj != 0)
-							tj += (nid == jmap[tj-1][1]) ? 2 : (nid > jmap[tj-1][0]) ? 1 : 0;
+				cid = cell%100;
+				nid = neighbor%100;
+				ti = (cell/100);
+				tj = (neighbor/100);	
+				
+				cid = (cid == jmap[ti-1][1]) ? 2 : (cid > jmap[ti-1][0]) ? 1 : 0;	
+				nid = (nid == jmap[tj-1][1]) ? 2 : (nid > jmap[tj-1][0]) ? 1 : 0;
 
-						newcell = value_original[ti][tj]*100;
-						newcell = (tj - neighbor/100 == 2 || newcell/100 == 0) ? 0 : cid + 1;
-        			}
+				ti = (ti == 0) ? 0 : key[ti-1][cid];
+				tj = (tj == 0) ? 0 : key[tj-1][nid];
+
+				newcell = value_original[ti][tj]*100;
+				newcell += (newcell/100 == 0) ? 0 : cell%100 + 1;
+        	
         	}
     	}
 
