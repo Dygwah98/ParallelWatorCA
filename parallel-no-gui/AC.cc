@@ -1,10 +1,10 @@
 #include"AC.h"
 
-void allocateMatrix(Cell ***datap, const int n, Cell** data, const int dim) {
+void allocateMatrix(Cell ***datap, const int n, Cell** data, const int dim, unsigned& seed) {
 
 	(*data) = new Cell[n*dim];
 	for(int i = 0; i < n*dim; ++i)
-		(*data)[i] = (rand()%4)*100;
+		(*data)[i] = (my_rand_r(&seed)%4)*100;
 
 
 	(*datap) = new Cell*[n];
