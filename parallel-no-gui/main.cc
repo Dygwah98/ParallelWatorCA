@@ -68,18 +68,16 @@ int main(int argc, char const *argv[]) {
 		
     MPI_Barrier(MPI_COMM_WORLD);
     
-    int pos[8] = {-4, -3, -2, -1, 1, 2, 3, 4};
-	int jmap[3][2] = {{8,15}, {3,5}, {2,7}};	
 
-	int sx, cid, nid;
-	int pivot, temp, ni, nj, ti, tj;
-
-	int chunk_size = (p + extra)/nthreads + 1;
-
-	#pragma omp parallel shared(pos, jmap, mat, tam, iter, vec_t, sendbufp, value_original, p, extra, world_rank, dim) private(seed, cid, nid, pivot, temp, ni, nj, ti, tj, sx) if(nthreads > 1)
+	#pragma omp parallel shared(mat, tam, iter, vec_t, sendbufp, value_original, p, extra, world_rank, dim) if(nthreads > 1)
     {
+    	int pos[8] = {-4, -3, -2, -1, 1, 2, 3, 4};
+		int jmap[3][2] = {{8,15}, {3,5}, {2,7}};
+		int sx, cid, nid;
+		int pivot, temp, ni, nj, ti, tj;
+		int chunk_size = (p + extra)/nthreads + 1;
+    	unsigned seed2 = (int)omp_get_wtime() ^ omp_get_thread_num();
 
-    	seed ^= (int)omp_get_wtime() ^ omp_get_thread_num();
     	for(int it = 0; it < iter; ++it) {
 		#pragma omp barrier
     	#pragma omp master
@@ -91,7 +89,7 @@ int main(int argc, char const *argv[]) {
         	sx = p*world_rank + i;
         	for(int j = 0; j < dim; ++j) {
    					
-   					pivot = pos[my_rand_r(&seed)%8];
+   					pivot = pos[my_rand_r(&seed2)%8];
 					temp = (sx*dim + j);
 					ni = (sx + j/dim + pivot/3 + dim) % dim;
 					nj = (temp%dim + pivot%3 + dim) % dim;
