@@ -9,7 +9,6 @@ Just move to your folder of interest and run the run.sh script file inside as be
 **sh run.sh [MPI_processes] [openMP_threads] [problem_dimension] [iterations_number]** <br>
 The following version are available:
 <br>
-<ul>
-<li>**serial-no-gui:** a single-thread single-process, clean version of the algorithm used (no user interface);
-<li>**parallel-no-gui:** the hybrid MPI-OpenMP implementation of the algorithm (no user interface);
-<li>**parallel-allegro:** simple Allegro graphic output with no interaction; worse performance-wise (only for visual testing).
+- **serial-no-gui:** a single-thread single-process, clean version of the algorithm used (no user interface);
+- **parallel-no-gui:** the hybrid MPI-OpenMP implementation of the algorithm (no user interface);
+- **parallel-allegro:** simple Allegro graphic output with no interaction; worse performance-wise (only for visual testing).
