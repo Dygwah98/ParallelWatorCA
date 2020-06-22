@@ -6,8 +6,8 @@ OpenMP, MPI, make for the -no-gui versions; same + Allegro5 for the gui version
 
 ## Build & Run
 Just move to your folder of interest and run the run.sh script file inside as below: <br>
-<b> sh run.sh [MPI_processes] [openMP_threads] [problem_dimension] [iterations_number]
-The following version are aviable:
+<b> sh run.sh [MPI_processes] [openMP_threads] [problem_dimension] [iterations_number] <\b>
+The following version are available:
 <br>
 <ul>
 <li>serial-no-gui: a single-thread single-process, clean version of the algorithm used (no user interface);
