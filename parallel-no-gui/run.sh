@@ -1,9 +1,9 @@
 #!/bin/bash
 
-np="$2"
-nt="$3"
-dim="$4"
-iter="$5"
+np="$1"
+nt="$2"
+dim="$3"
+iter="$4"
 
 sudo env OMP_DYNAMIC=false > /dev/null
 sudo env OMP_NUM_THREADS="$nt" > /dev/null
