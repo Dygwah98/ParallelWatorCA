@@ -110,7 +110,9 @@ int main(int argc, char const *argv[]) {
 
 	int pos[8] = {-4, -3, -2, -1, 1, 2, 3, 4};
 	int jmap[3][2] = {{0,7}, {3,9}, {2,7}};
-	
+			
+	MPI_Request req;
+
 	while(!exit) {
     	
     	if(world_rank == 0) {
@@ -154,7 +156,7 @@ int main(int argc, char const *argv[]) {
     		}
     	}
 
-    	MPI_Bcast(&(mat[0][0]), dim, vec_t, 0, MPI_COMM_WORLD);
+    	MPI_Ibcast(&(mat[0][0]), dim, vec_t, 0, MPI_COMM_WORLD, &req);
 
 	    #pragma omp parallel shared(mat, tam, vec_t, sendbufp, value_original, p, extra, world_rank, dim, pos, jmap) if(nthreads > 1)
 	    {
@@ -197,7 +199,6 @@ int main(int argc, char const *argv[]) {
 		}
 
     	MPI_Gather(&(tam[extra][0]), p, vec_t, sendbufp, p, vec_t, 0, MPI_COMM_WORLD);
-	MPI_Bcast((void*)&extra, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
     }
     
