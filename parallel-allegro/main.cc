@@ -5,13 +5,13 @@
 
 int main(int argc, char const *argv[]) {
 
-	int key[3][3] = {
+	const int key[3][3] = {
 		{1, 2, 3},
 		{4, 5, 6},
 		{7, 8, 9}
 	};
 
-	int value_original[10][10] = {
+	const int value_original[10][10] = {
        //0 10 11 12 20 21 22 30 31 32
 /*0*/	{0, 0, 1, 1, 0, 2, 2, 0, 3, 3},
 /*10*/	{1, 1, 1, 1, 0, 0, 0, 0, 0, 0},
@@ -22,9 +22,12 @@ int main(int argc, char const *argv[]) {
 /*22*/	{0, 2, 2, 2, 0, 0, 0, 0, 0, 0},
 /*30*/	{3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
 /*31*/	{3, 3, 3, 3, 3, 3, 3, 3, 0, 0},
-/*32*/	{0, 3, 3, 3, 3, 3, 3, 0, 0, 0}
+/*32*/	{0, 0, 0, 0, 3, 3, 3, 0, 0, 0}
 	};
 		
+	const int pos[8] = {-4, -3, -2, -1, 1, 2, 3, 4};
+	const int jmap[3][2] = {{8,15}, {3,5}, {2,4}};
+
 	if(argc < 2) {
 		fprintf(stderr, "Usage: matrix-dimension iterations-number\n");
 	}
@@ -53,7 +56,7 @@ int main(int argc, char const *argv[]) {
     ALLEGRO_DISPLAY *display = nullptr;
 	ALLEGRO_TIMER* timer = nullptr;
 	ALLEGRO_EVENT_QUEUE* queue = nullptr;
-	bool redraw = true, exit = false;
+	int redraw = true, exit = false;
 
 	if(world_rank == 0) {
 
@@ -73,7 +76,7 @@ int main(int argc, char const *argv[]) {
 
 	Cell **mat = NULL;
 	Cell **tam = NULL;
-	Cell *matdata, *tamdata;
+	Cell *matdata = NULL, *tamdata = NULL;
 	Cell *sendbufp = NULL;
 	
 	int p = dim/world_size;
@@ -92,10 +95,7 @@ int main(int argc, char const *argv[]) {
     	allocateMatrix(&tam, p, &tamdata, dim, seed);
     }
 		
-    MPI_Barrier(MPI_COMM_WORLD);
-    if(world_rank == 0)
-    	printf("Allocating complete\n");
-
+    
 	if(world_rank == 0) {
 	    al_start_timer(timer);
 	    al_flush_event_queue(queue);
@@ -104,16 +104,12 @@ int main(int argc, char const *argv[]) {
 
 	ALLEGRO_EVENT ev;
 
-	ALLEGRO_COLOR c1 = al_map_rgb(0, 0, 0);
+	ALLEGRO_COLOR c1 = al_map_rgb(255, 255, 255);
 	ALLEGRO_COLOR c2 = al_map_rgb(200, 0, 0);
 	ALLEGRO_COLOR c3 = al_map_rgb(0, 200, 0);
 	ALLEGRO_COLOR c4 = al_map_rgb(0, 0, 200);
 	
-
-	int pos[8] = {-4, -3, -2, -1, 1, 2, 3, 4};
-	int jmap[3][2] = {{0,7}, {3,9}, {2,7}};
-			
-	MPI_Request req;
+	MPI_Barrier(MPI_COMM_WORLD);
 
 	while(!exit) {
     	
@@ -123,21 +119,19 @@ int main(int argc, char const *argv[]) {
     			//printf("going to print\n");
     			redraw = false;
     			
-    			al_clear_to_color(al_map_rgb(0, 0, 0));	
-	 			al_lock_bitmap(al_get_target_bitmap(), ALLEGRO_PIXEL_FORMAT_ANY, ALLEGRO_LOCK_WRITEONLY);
+    			al_clear_to_color(al_map_rgb(255, 255, 255));
 	 			al_hold_bitmap_drawing(true);
 	 			for(int i = 0; i < dim; ++i)
 	 			for(int j = 0; j < dim; ++j){
 	 				int gid = mat[i][j]/100;
 	 				switch(gid) {
-	 					case 0: al_draw_pixel(i, j, c1); break;
-	 					case 1: al_draw_pixel(i, j, c2); break;
-	 					case 2: al_draw_pixel(i, j, c3); break;
-	 					case 3: al_draw_pixel(i, j, c4); break;
+	 					case 0: al_draw_pixel(j, i, c1); break;
+	 					case 1: al_draw_pixel(j, i, c2); break;
+	 					case 2: al_draw_pixel(j, i, c3); break;
+	 					case 3: al_draw_pixel(j, i, c4); break;
 	 				}
 	 			}
 	 			al_hold_bitmap_drawing(false);
-	 			al_unlock_bitmap(al_get_target_bitmap());
 	 			al_flip_display();
     			
     		} else {
@@ -152,18 +146,19 @@ int main(int argc, char const *argv[]) {
     					//printf("Close event\n");
     					exit = true;
     					break;
-    					}
+    				}
     			} while(!al_is_event_queue_empty(queue));
     			//printf("done waiting\n");
     		}
     	}
 
-    	MPI_Ibcast(&(mat[0][0]), dim, vec_t, 0, MPI_COMM_WORLD, &req);
+    	//MPI_Barrier(MPI_COMM_WORLD);
+    	MPI_Bcast(&(mat[0][0]), dim, vec_t, 0, MPI_COMM_WORLD);
 
-	    #pragma omp parallel shared(mat, tam, vec_t, sendbufp, value_original, p, extra, world_rank, dim, pos, jmap) if(nthreads > 1)
+	    #pragma omp parallel shared(mat, tam, vec_t, sendbufp, value_original, p, extra, world_rank, dim, pos, jmap, key, nthreads) default(none) if(nthreads > 1)
 	    {
-    		int sx, cid, nid;
-			int pivot, ni, nj, ti, tj;
+    		int sx = 0, cid = 0, nid = 0;
+			int pivot = 0, ni = 0, nj = 0, ti = 0, tj = 0;
 			int chunk_size = (p + extra)/nthreads + 1;
     		unsigned seed2 = omp_get_wtime() * (omp_get_thread_num() + 1);
 			
@@ -192,18 +187,20 @@ int main(int argc, char const *argv[]) {
 					tj = (tj == 0) ? 0 : key[tj-1][nid];
 
 					newcell = value_original[ti][tj]*100;
-					newcell += (newcell/100 == 0) ? 0 : cell%100 + 1;
-        				
-        			//printf("C(%d,%d):%d %d N(%d, %d):%d %d -> C(%d, %d) %d\n", sx, j, ti, cell, ni, nj, tj, neighbor, i, j, newcell);
-        			
+					newcell += (newcell/100 == 0) ? 0 : cell%100 + 1;  			
         		}
     		}
 		}
 
+    	//MPI_Barrier(MPI_COMM_WORLD);
     	MPI_Gather(&(tam[extra][0]), p, vec_t, sendbufp, p, vec_t, 0, MPI_COMM_WORLD);
+    	MPI_Bcast((void*)&extra, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
     }
     
+    al_stop_timer(timer);
+    al_pause_event_queue(queue, true);
+    al_flush_event_queue(queue);
 	freeMatrix(mat, matdata);
     freeMatrix(tam, tamdata);
 
@@ -214,6 +211,7 @@ int main(int argc, char const *argv[]) {
     	al_destroy_display(display);
     }    
     
+    MPI_Type_free(&vec_t);
     MPI_Finalize();
 	return 0;
 }

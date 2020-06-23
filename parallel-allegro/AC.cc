@@ -4,12 +4,20 @@ void allocateMatrix(Cell ***datap, const int n, Cell** data, const int dim, unsi
 	
 	(*data) = new Cell[n*dim];	
 	for(int i = 0; i < n*dim; ++i) {
-		(*data)[i] = (my_rand_r(&seed))%4 * 100;
+		seed *= i;
+		int v = my_rand_r(&seed);
+		if(v < 50000)
+			(*data)[i] = (v)%2 * 100;
+		else if(v < 65000)
+			(*data)[i] = (v)%3 * 100;
+		else
+			(*data)[i] = (v)%4 * 100;
+
 	}
 
 	(*datap) = new Cell*[n];
 	for(int i = 0; i < n; ++i)
-		(*datap)[i] = &((*data)[i]);
+		(*datap)[i] = &((*data)[i*dim]);
 
 }
 

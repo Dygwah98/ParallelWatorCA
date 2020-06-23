@@ -18,6 +18,7 @@ void printMatrix(Cell** mat, const int dim);
 
 inline unsigned int my_rand_r(unsigned int* seed) {
 
-   *seed = (*seed) * 1103515245 + 12345; 
-   return (unsigned int)((*seed)/65536) % 32768; 
+   	*seed = (*seed) * 1103515245 + 12345; 
+
+  	return (unsigned int)((*seed)/65536) % RAND_MAX; 
 }
