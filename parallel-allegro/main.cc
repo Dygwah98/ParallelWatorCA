@@ -93,8 +93,6 @@ int main(int argc, char const *argv[]) {
     }
 		
     MPI_Barrier(MPI_COMM_WORLD);
-    if(world_rank == 0)
-    	printf("Allocating complete\n");
 
 	if(world_rank == 0) {
 	    al_start_timer(timer);
